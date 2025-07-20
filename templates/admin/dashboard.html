@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Admin - Velours{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tachometer-alt"></i> Administration</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_products') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-gem"></i> Produits
+                    </a>
+                    <a href="{{ url_for('admin_orders') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-bag"></i> Commandes
+                    </a>
+                    <a href="{{ url_for('admin_stock') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-boxes"></i> Stock
+                    </a>
+                    <a href="{{ url_for('admin_sliders') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-images"></i> Sliders
+                    </a>
+                    <a href="{{ url_for('admin_footer') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-footer"></i> Footer
+                    </a>
+                    <a href="{{ url_for('admin_logo') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-image"></i> Logo Velours
+                    </a>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span><i class="fab fa-telegram"></i> Telegram</span>
+                            <button class="btn btn-sm btn-outline-primary" onclick="testTelegram()">
+                                <i class="fas fa-paper-plane"></i> Test
+                            </button>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span><i class="fab fa-whatsapp"></i> WhatsApp</span>
+                            <button class="btn btn-sm btn-outline-success" onclick="testWhatsApp()">
+                                <i class="fas fa-mobile-alt"></i> Test
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <h2>Dashboard Administrateur</h2>
+            
+            <!-- Statistiques -->
+            <div class="row mb-4">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-primary text-white admin-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ total_products }}</h4>
+                                    <p class="mb-0">Produits</p>
+                                </div>
+                                <div>
+                                    <i class="fas fa-gem fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-success text-white admin-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ total_orders }}</h4>
+                                    <p class="mb-0">Commandes</p>
+                                </div>
+                                <div>
+                                    <i class="fas fa-shopping-bag fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-info text-white admin-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ total_users }}</h4>
+                                    <p class="mb-0">Clients</p>
+                                </div>
+                                <div>
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-warning text-white admin-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ low_stock_products }}</h4>
+                                    <p class="mb-0">Stock bas</p>
+                                </div>
+                                <div>
+                                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-secondary text-white admin-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ active_sliders }}</h4>
+                                    <p class="mb-0">Sliders</p>
+                                </div>
+                                <div>
+                                    <i class="fas fa-images fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-dark text-white admin-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4><i class="fas fa-cog"></i></h4>
+                                    <p class="mb-0">Footer</p>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('admin_footer') }}" class="btn btn-outline-light btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-primary text-white admin-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4><i class="fab fa-telegram"></i></h4>
+                                    <p class="mb-0">Telegram</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-light btn-sm" onclick="testTelegram()" title="Tester la connexion">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-success text-white admin-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4><i class="fab fa-whatsapp"></i></h4>
+                                    <p class="mb-0">WhatsApp</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-light btn-sm" onclick="testWhatsApp()" title="Tester WhatsApp">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-warning text-dark admin-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4><i class="fas fa-image"></i></h4>
+                                    <p class="mb-0">Logo</p>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('admin_logo') }}" class="btn btn-outline-dark btn-sm" title="Changer le logo">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Commandes récentes -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Commandes récentes</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_orders %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Client</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.user.first_name }} {{ order.user.last_name }}</td>
+                                    <td>{{ order.created_at.strftime('%d/%m/%Y') }}</td>
+                                    <td>{{ "%.2f"|format(order.total_amount) }} €</td>
+                                    <td>
+                                        <span class="badge bg-{% if order.status == 'pending' %}warning{% elif order.status == 'confirmed' %}info{% elif order.status == 'shipped' %}primary{% elif order.status == 'delivered' %}success{% else %}danger{% endif %}">
+                                            {{ order.status|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">Voir</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucune commande récente.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Test de la connexion Telegram
+function testTelegram() {
+    const button = event.target.closest('button');
+    const originalContent = button.innerHTML;
+
+    // Afficher le loading
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    button.disabled = true;
+
+    fetch('/admin/telegram/test', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            BijouxStore.showAlert(data.message, 'success');
+            // Animation de succès
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            button.classList.remove('btn-outline-light');
+            button.classList.add('btn-success');
+
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.classList.remove('btn-success');
+                button.classList.add('btn-outline-light');
+                button.disabled = false;
+            }, 2000);
+        } else {
+            BijouxStore.showAlert(data.error || 'Erreur lors du test', 'danger');
+            button.innerHTML = '<i class="fas fa-times"></i>';
+            button.classList.remove('btn-outline-light');
+            button.classList.add('btn-danger');
+
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.classList.remove('btn-danger');
+                button.classList.add('btn-outline-light');
+                button.disabled = false;
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        BijouxStore.showAlert('Erreur de connexion', 'danger');
+        button.innerHTML = originalContent;
+        button.disabled = false;
+    });
+}
+
+// Auto-test de Telegram au chargement de la page (optionnel)
+document.addEventListener('DOMContentLoaded', function() {
+    // Afficher un indicateur de statut Telegram
+    const telegramCard = document.querySelector('.card.bg-primary');
+    if (telegramCard) {
+        // Ajouter un petit indicateur de statut
+        const statusIndicator = document.createElement('div');
+        statusIndicator.className = 'position-absolute top-0 end-0 m-2';
+        statusIndicator.innerHTML = '<span class="badge bg-success rounded-pill" title="Notifications actives">●</span>';
+        telegramCard.style.position = 'relative';
+        telegramCard.appendChild(statusIndicator);
+    }
+});
+
+// Test de la connexion WhatsApp
+function testWhatsApp() {
+    const button = event.target.closest('button');
+    const originalContent = button.innerHTML;
+
+    // Afficher le loading
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    button.disabled = true;
+
+    fetch('/admin/whatsapp/test', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            BijouxStore.showAlert(data.message, 'success');
+            // Animation de succès
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            button.classList.remove('btn-outline-light', 'btn-outline-success');
+            button.classList.add('btn-success');
+
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.classList.remove('btn-success');
+                button.classList.add('btn-outline-success');
+                button.disabled = false;
+            }, 2000);
+        } else {
+            BijouxStore.showAlert(data.error || 'Erreur lors du test WhatsApp', 'danger');
+            button.innerHTML = '<i class="fas fa-times"></i>';
+            button.classList.remove('btn-outline-light', 'btn-outline-success');
+            button.classList.add('btn-danger');
+
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.classList.remove('btn-danger');
+                button.classList.add('btn-outline-success');
+                button.disabled = false;
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        BijouxStore.showAlert('Erreur de connexion WhatsApp', 'danger');
+        button.innerHTML = originalContent;
+        button.disabled = false;
+    });
+}
+</script>
+{% endblock %}

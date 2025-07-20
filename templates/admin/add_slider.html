@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter un Slider - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tachometer-alt"></i> Administration</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_products') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-gem"></i> Produits
+                    </a>
+                    <a href="{{ url_for('admin_orders') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-bag"></i> Commandes
+                    </a>
+                    <a href="{{ url_for('admin_stock') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-boxes"></i> Stock
+                    </a>
+                    <a href="{{ url_for('admin_sliders') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-images"></i> Sliders
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Ajouter un Slider</h2>
+                <a href="{{ url_for('admin_sliders') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Titre principal *</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                    <div class="form-text">Titre principal affiché sur le slider</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="subtitle" class="form-label">Sous-titre</label>
+                                    <input type="text" class="form-control" id="subtitle" name="subtitle">
+                                    <div class="form-text">Sous-titre optionnel</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                                    <div class="form-text">Description détaillée (optionnelle)</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="button_text" class="form-label">Texte du bouton</label>
+                                    <input type="text" class="form-control" id="button_text" name="button_text" placeholder="Ex: Découvrir">
+                                    <div class="form-text">Texte affiché sur le bouton (optionnel)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="button_link" class="form-label">Lien du bouton</label>
+                                    <input type="url" class="form-control" id="button_link" name="button_link" placeholder="https://...">
+                                    <div class="form-text">URL vers laquelle le bouton redirige</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="order_position" class="form-label">Position d'affichage</label>
+                                    <input type="number" class="form-control" id="order_position" name="order_position" value="0" min="0">
+                                    <div class="form-text">Ordre d'affichage (0 = premier)</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">Image du slider *</label>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                                    <div class="form-text">Image de fond du slider (recommandé: 1920x600px)</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="active" name="active" checked>
+                                        <label class="form-check-label" for="active">
+                                            Slider actif (visible sur le site)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_sliders') }}" class="btn btn-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer le slider
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Conseils -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb"></i> Conseils pour un bon slider</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Dimensions recommandées :</h6>
+                            <ul>
+                                <li>Largeur : 1920px minimum</li>
+                                <li>Hauteur : 600px à 800px</li>
+                                <li>Format : JPG ou PNG</li>
+                                <li>Taille : moins de 2MB</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Bonnes pratiques :</h6>
+                            <ul>
+                                <li>Utilisez des images de haute qualité</li>
+                                <li>Évitez trop de texte sur l'image</li>
+                                <li>Assurez-vous que le texte est lisible</li>
+                                <li>Testez sur mobile et desktop</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aperçu de l'image
+    const imageInput = document.getElementById('image');
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let preview = document.getElementById('image-preview');
+                if (!preview) {
+                    preview = document.createElement('div');
+                    preview.id = 'image-preview';
+                    preview.className = 'mt-3';
+                    imageInput.parentNode.appendChild(preview);
+                }
+                preview.innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <small>Aperçu de l'image</small>
+                        </div>
+                        <div class="card-body p-0">
+                            <img src="${e.target.result}" class="img-fluid" style="max-height: 200px; width: 100%; object-fit: cover;">
+                        </div>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Génération automatique du lien du bouton
+    const buttonTextInput = document.getElementById('button_text');
+    const buttonLinkInput = document.getElementById('button_link');
+    
+    buttonTextInput.addEventListener('input', function() {
+        if (this.value && !buttonLinkInput.value) {
+            // Suggérer un lien basé sur le texte du bouton
+            const text = this.value.toLowerCase();
+            if (text.includes('catalogue') || text.includes('produit')) {
+                buttonLinkInput.value = '/catalog';
+            } else if (text.includes('contact')) {
+                buttonLinkInput.value = '/contact';
+            } else if (text.includes('découvrir') || text.includes('voir')) {
+                buttonLinkInput.value = '/catalog';
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Détails Commande #{{ order.id }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tachometer-alt"></i> Administration</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_products') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-gem"></i> Produits
+                    </a>
+                    <a href="{{ url_for('admin_orders') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-shopping-bag"></i> Commandes
+                    </a>
+                    <a href="{{ url_for('admin_stock') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-boxes"></i> Stock
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Commande #{{ order.id }}</h2>
+                <div>
+                    <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Imprimer
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Informations de la commande -->
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Informations de la commande</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Date de commande:</strong> {{ order.created_at.strftime('%d/%m/%Y à %H:%M') }}</p>
+                                    <p><strong>Statut:</strong> 
+                                        <span class="badge bg-{% if order.status == 'pending' %}warning{% elif order.status == 'confirmed' %}info{% elif order.status == 'shipped' %}primary{% elif order.status == 'delivered' %}success{% else %}danger{% endif %}">
+                                            {{ order.status|title }}
+                                        </span>
+                                    </p>
+                                    <p><strong>Total:</strong> <span class="h5 text-primary">{{ "%.2f"|format(order.total_amount) }} €</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    {% if order.notes %}
+                                    <p><strong>Notes:</strong></p>
+                                    <p class="text-muted">{{ order.notes }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Produits commandés -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Produits commandés</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>Prix unitaire</th>
+                                            <th>Quantité</th>
+                                            <th>Sous-total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.items %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover;" class="rounded me-3">
+                                                    <div>
+                                                        <strong>{{ item.product.name }}</strong><br>
+                                                        <small class="text-muted">{{ item.product.category }} - {{ item.product.material }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ "%.2f"|format(item.price) }} €</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td><strong>{{ "%.2f"|format(item.price * item.quantity) }} €</strong></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3">Total</th>
+                                            <th>{{ "%.2f"|format(order.total_amount) }} €</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Informations client -->
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Informations client</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>{{ order.user.first_name }} {{ order.user.last_name }}</strong></p>
+                            <p><i class="fas fa-envelope"></i> {{ order.user.email }}</p>
+                            {% if order.phone %}
+                            <p><i class="fas fa-phone"></i> {{ order.phone }}</p>
+                            {% endif %}
+                            <p><strong>Membre depuis:</strong> {{ order.user.created_at.strftime('%d/%m/%Y') }}</p>
+                            <p><strong>Commandes totales:</strong> {{ order.user.orders|length }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Adresse de livraison</h5>
+                        </div>
+                        <div class="card-body">
+                            <address>
+                                {{ order.shipping_address|replace('\n', '<br>')|safe }}
+                            </address>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.id) }}">
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Changer le statut</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>En attente</option>
+                                        <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmée</option>
+                                        <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Expédiée</option>
+                                        <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Livrée</option>
+                                        <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Annulée</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-save"></i> Mettre à jour
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

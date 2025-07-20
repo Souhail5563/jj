@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter un Parfum - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 admin-dark-theme">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tachometer-alt"></i> Administration</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_products') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-spray-can"></i> Parfums
+                    </a>
+                    <a href="{{ url_for('admin_orders') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-bag"></i> Commandes
+                    </a>
+                    <a href="{{ url_for('admin_stock') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-boxes"></i> Stock
+                    </a>
+                    <a href="{{ url_for('admin_sliders') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-images"></i> Sliders
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-spray-can me-2"></i>Ajouter un Parfum</h2>
+                <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour aux Parfums
+                </a>
+            </div>
+            
+            <!-- Formulaire Parfum Avancé -->
+            <div class="card perfume-admin-card">
+                <div class="card-header bg-gradient text-white">
+                    <h5 class="mb-0"><img src="{{ url_for('static', filename='images/logo/velours-logo.svg') }}" class="admin-velours-logo" alt="Velours"><i class="fas fa-spray-can me-2"></i>Nouveau Parfum de Luxe</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" id="perfumeForm">
+                        <!-- Informations de base -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3"><i class="fas fa-info-circle me-2"></i>Informations Générales</h6>
+
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">
+                                        <i class="fas fa-tag me-1"></i>Nom du parfum *
+                                    </label>
+                                    <input type="text" class="form-control perfume-input" id="name" name="name"
+                                           placeholder="Ex: Chanel N°5 EDP 50ml" required>
+                                    <div class="form-text">Incluez la marque, le nom et le volume</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">
+                                        <i class="fas fa-layer-group me-1"></i>Type de parfum *
+                                    </label>
+                                    <select class="form-select perfume-input" id="category" name="category" required>
+                                        <option value="">Choisir le type</option>
+                                        <option value="Eau de Parfum">Eau de Parfum (EDP)</option>
+                                        <option value="Eau de Toilette">Eau de Toilette (EDT)</option>
+                                        <option value="Eau de Cologne">Eau de Cologne (EDC)</option>
+                                        <option value="Parfum">Parfum (Extrait)</option>
+                                    </select>
+                                    <div class="form-text">Concentration du parfum</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="material" class="form-label">
+                                        <i class="fas fa-crown me-1"></i>Informations marque *
+                                    </label>
+                                    <input type="text" class="form-control perfume-input" id="material" name="material"
+                                           placeholder="Ex: Chanel - Femme - 50ml" required>
+                                    <div class="form-text">Format: Marque - Genre - Volume</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="price" class="form-label">
+                                                <i class="fas fa-euro-sign me-1"></i>Prix (€) *
+                                            </label>
+                                            <input type="number" class="form-control perfume-input" id="price" name="price"
+                                                   step="0.01" min="0" placeholder="89.90" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="stock_quantity" class="form-label">
+                                                <i class="fas fa-boxes me-1"></i>Stock *
+                                            </label>
+                                            <input type="number" class="form-control perfume-input" id="stock_quantity"
+                                                   name="stock_quantity" min="0" placeholder="25" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3"><i class="fas fa-images me-2"></i>Galerie d'Images</h6>
+
+                                <!-- Upload d'images multiples -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-camera me-1"></i>Images du parfum
+                                    </label>
+                                    <div class="image-upload-container">
+                                        <div class="image-upload-item">
+                                            <input type="file" class="form-control image-input" name="image_main"
+                                                   accept="image/*" data-preview="preview-main">
+                                            <label class="image-upload-label">
+                                                <i class="fas fa-star"></i> Image Principale
+                                            </label>
+                                            <div class="image-preview" id="preview-main">
+                                                <i class="fas fa-image fa-3x text-muted"></i>
+                                                <p class="text-muted">Cliquez pour ajouter</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="image-upload-item">
+                                            <input type="file" class="form-control image-input" name="image_side"
+                                                   accept="image/*" data-preview="preview-side">
+                                            <label class="image-upload-label">
+                                                <i class="fas fa-eye"></i> Vue de Côté
+                                            </label>
+                                            <div class="image-preview" id="preview-side">
+                                                <i class="fas fa-image fa-2x text-muted"></i>
+                                                <p class="text-muted">Optionnel</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="image-upload-item">
+                                            <input type="file" class="form-control image-input" name="image_back"
+                                                   accept="image/*" data-preview="preview-back">
+                                            <label class="image-upload-label">
+                                                <i class="fas fa-undo"></i> Vue Arrière
+                                            </label>
+                                            <div class="image-preview" id="preview-back">
+                                                <i class="fas fa-image fa-2x text-muted"></i>
+                                                <p class="text-muted">Optionnel</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="image-upload-item">
+                                            <input type="file" class="form-control image-input" name="image_box"
+                                                   accept="image/*" data-preview="preview-box">
+                                            <label class="image-upload-label">
+                                                <i class="fas fa-box"></i> Avec Emballage
+                                            </label>
+                                            <div class="image-preview" id="preview-box">
+                                                <i class="fas fa-image fa-2x text-muted"></i>
+                                                <p class="text-muted">Optionnel</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Formats acceptés: JPG, PNG, GIF. Taille max: 5MB par image.
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="min_stock_alert" class="form-label">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Seuil d'alerte stock
+                                    </label>
+                                    <input type="number" class="form-control perfume-input" id="min_stock_alert"
+                                           name="min_stock_alert" value="5" min="0" placeholder="5">
+                                    <div class="form-text">Alerte quand le stock atteint ce niveau</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description et Notes Olfactives -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fas fa-leaf me-2"></i>Description et Notes Olfactives</h6>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">
+                                        <i class="fas fa-align-left me-1"></i>Description générale *
+                                    </label>
+                                    <textarea class="form-control perfume-input" id="description" name="description"
+                                              rows="4" placeholder="Décrivez ce parfum, son histoire, son caractère..." required></textarea>
+                                    <div class="form-text">Description marketing du parfum</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="fragrance_family" class="form-label">
+                                        <i class="fas fa-sitemap me-1"></i>Famille olfactive
+                                    </label>
+                                    <select class="form-select perfume-input" id="fragrance_family" name="fragrance_family">
+                                        <option value="">Choisir une famille</option>
+                                        <option value="Floral">Floral</option>
+                                        <option value="Oriental">Oriental</option>
+                                        <option value="Boisé">Boisé</option>
+                                        <option value="Frais">Frais</option>
+                                        <option value="Fruité">Fruité</option>
+                                        <option value="Gourmand">Gourmand</option>
+                                        <option value="Aromatique">Aromatique</option>
+                                        <option value="Chypré">Chypré</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="top_notes" class="form-label">
+                                        <i class="fas fa-arrow-up me-1"></i>Notes de tête
+                                    </label>
+                                    <input type="text" class="form-control perfume-input" id="top_notes" name="top_notes"
+                                           placeholder="Ex: Bergamote, Citron, Poivre rose">
+                                    <div class="form-text">Premières notes perçues (0-15 min)</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="heart_notes" class="form-label">
+                                        <i class="fas fa-heart me-1"></i>Notes de cœur
+                                    </label>
+                                    <input type="text" class="form-control perfume-input" id="heart_notes" name="heart_notes"
+                                           placeholder="Ex: Rose, Jasmin, Géranium">
+                                    <div class="form-text">Cœur du parfum (15 min - 3h)</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="base_notes" class="form-label">
+                                        <i class="fas fa-arrow-down me-1"></i>Notes de fond
+                                    </label>
+                                    <input type="text" class="form-control perfume-input" id="base_notes" name="base_notes"
+                                           placeholder="Ex: Santal, Vanille, Musc">
+                                    <div class="form-text">Notes persistantes (3h+)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Informations Avancées -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3"><i class="fas fa-cogs me-2"></i>Informations Avancées</h6>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">
+                                        <i class="fas fa-venus-mars me-1"></i>Genre
+                                    </label>
+                                    <select class="form-select perfume-input" id="gender" name="gender">
+                                        <option value="">Choisir le genre</option>
+                                        <option value="Femme">Femme</option>
+                                        <option value="Homme">Homme</option>
+                                        <option value="Mixte">Mixte</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="volume" class="form-label">
+                                        <i class="fas fa-flask me-1"></i>Volume (ml)
+                                    </label>
+                                    <input type="number" class="form-control perfume-input" id="volume" name="volume"
+                                           min="1" placeholder="50">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="concentration" class="form-label">
+                                        <i class="fas fa-tint me-1"></i>Concentration
+                                    </label>
+                                    <select class="form-select perfume-input" id="concentration" name="concentration">
+                                        <option value="">Choisir la concentration</option>
+                                        <option value="EDP">EDP (15-20%)</option>
+                                        <option value="EDT">EDT (5-15%)</option>
+                                        <option value="EDC">EDC (2-4%)</option>
+                                        <option value="Parfum">Parfum (20-30%)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <a href="{{ url_for('admin_products') }}" class="btn btn-secondary me-2">
+                                            <i class="fas fa-times me-1"></i>Annuler
+                                        </a>
+                                        <button type="button" class="btn btn-outline-primary" onclick="previewPerfume()">
+                                            <i class="fas fa-eye me-1"></i>Aperçu
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            <i class="fas fa-spray-can me-2"></i>Créer le Parfum
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal d'aperçu -->
+            <div class="modal fade" id="previewModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-eye me-2"></i>Aperçu du Parfum
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body" id="previewContent">
+                            <!-- Contenu généré par JavaScript -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin-perfume.js') }}"></script>
+{% endblock %}

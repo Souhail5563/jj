@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier {{ slider.title }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tachometer-alt"></i> Administration</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_products') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-gem"></i> Produits
+                    </a>
+                    <a href="{{ url_for('admin_orders') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-bag"></i> Commandes
+                    </a>
+                    <a href="{{ url_for('admin_stock') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-boxes"></i> Stock
+                    </a>
+                    <a href="{{ url_for('admin_sliders') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-images"></i> Sliders
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Modifier le Slider</h2>
+                <a href="{{ url_for('admin_sliders') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Titre principal *</label>
+                                    <input type="text" class="form-control" id="title" name="title" value="{{ slider.title }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="subtitle" class="form-label">Sous-titre</label>
+                                    <input type="text" class="form-control" id="subtitle" name="subtitle" value="{{ slider.subtitle or '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="3">{{ slider.description or '' }}</textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="button_text" class="form-label">Texte du bouton</label>
+                                    <input type="text" class="form-control" id="button_text" name="button_text" value="{{ slider.button_text or '' }}">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="button_link" class="form-label">Lien du bouton</label>
+                                    <input type="url" class="form-control" id="button_link" name="button_link" value="{{ slider.button_link or '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="order_position" class="form-label">Position d'affichage</label>
+                                    <input type="number" class="form-control" id="order_position" name="order_position" value="{{ slider.order_position }}" min="0">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">Image du slider</label>
+                                    {% if slider.image_filename %}
+                                    <div class="mb-2">
+                                        <img src="{{ slider.image_url }}" alt="{{ slider.title }}" class="img-thumbnail" style="max-width: 200px; max-height: 100px; object-fit: cover;">
+                                        <div class="form-text">Image actuelle</div>
+                                    </div>
+                                    {% endif %}
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                    <div class="form-text">Laissez vide pour conserver l'image actuelle</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="active" name="active" {% if slider.active %}checked{% endif %}>
+                                        <label class="form-check-label" for="active">
+                                            Slider actif (visible sur le site)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <a href="{{ url_for('admin_sliders') }}" class="btn btn-secondary">Annuler</a>
+                                <a href="{{ url_for('admin_delete_slider', id=slider.id) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce slider ?')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </a>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer les modifications
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Aperçu actuel -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-eye"></i> Aperçu actuel</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="slider-preview" style="position: relative; height: 250px; background-image: url('{{ slider.image_url }}'); background-size: cover; background-position: center; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
+                            <div class="text-center text-white">
+                                <h3>{{ slider.title }}</h3>
+                                {% if slider.subtitle %}
+                                <h5>{{ slider.subtitle }}</h5>
+                                {% endif %}
+                                {% if slider.description %}
+                                <p>{{ slider.description }}</p>
+                                {% endif %}
+                                {% if slider.button_text %}
+                                <button class="btn btn-primary">{{ slider.button_text }}</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Informations du slider -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Informations du slider</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Créé le:</strong> {{ slider.created_at.strftime('%d/%m/%Y à %H:%M') }}</p>
+                            <p><strong>Dernière modification:</strong> {{ slider.updated_at.strftime('%d/%m/%Y à %H:%M') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>ID:</strong> #{{ slider.id }}</p>
+                            <p><strong>Statut:</strong> 
+                                {% if slider.active %}
+                                <span class="badge bg-success">Actif</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inactif</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aperçu de la nouvelle image
+    const imageInput = document.getElementById('image');
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let preview = document.getElementById('new-image-preview');
+                if (!preview) {
+                    preview = document.createElement('div');
+                    preview.id = 'new-image-preview';
+                    preview.className = 'mt-3';
+                    imageInput.parentNode.appendChild(preview);
+                }
+                preview.innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <small>Aperçu de la nouvelle image</small>
+                        </div>
+                        <div class="card-body p-0">
+                            <img src="${e.target.result}" class="img-fluid" style="max-height: 150px; width: 100%; object-fit: cover;">
+                        </div>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+</script>
+{% endblock %}

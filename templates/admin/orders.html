@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Commandes - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tachometer-alt"></i> Administration</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_products') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-gem"></i> Produits
+                    </a>
+                    <a href="{{ url_for('admin_orders') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-shopping-bag"></i> Commandes
+                    </a>
+                    <a href="{{ url_for('admin_stock') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-boxes"></i> Stock
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Gestion des Commandes</h2>
+                <div class="d-flex gap-3">
+                    <!-- Boutons d'actions groupées -->
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-danger" id="deleteSelectedBtn" onclick="deleteSelectedOrders()" disabled>
+                            <i class="fas fa-trash"></i> Supprimer sélectionnées
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="exportOrders()">
+                            <i class="fas fa-download"></i> Exporter
+                        </button>
+                    </div>
+
+                    <!-- Filtres par statut -->
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="status-filter" id="all" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="all">Toutes</label>
+
+                        <input type="radio" class="btn-check" name="status-filter" id="pending" autocomplete="off">
+                        <label class="btn btn-outline-warning" for="pending">En attente</label>
+
+                        <input type="radio" class="btn-check" name="status-filter" id="confirmed" autocomplete="off">
+                        <label class="btn btn-outline-info" for="confirmed">Confirmées</label>
+
+                        <input type="radio" class="btn-check" name="status-filter" id="shipped" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="shipped">Expédiées</label>
+
+                        <input type="radio" class="btn-check" name="status-filter" id="delivered" autocomplete="off">
+                        <label class="btn btn-outline-success" for="delivered">Livrées</label>
+                    </div>
+                </div>
+            </div>
+            
+            {% if orders.items %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                    </th>
+                                    <th>#</th>
+                                    <th>Client</th>
+                                    <th>Date</th>
+                                    <th>Articles</th>
+                                    <th>Total</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders.items %}
+                                <tr data-status="{{ order.status }}" data-order-id="{{ order.id }}">
+                                    <td>
+                                        <input type="checkbox" class="order-checkbox" value="{{ order.id }}" onchange="updateDeleteButton()">
+                                    </td>
+                                    <td><strong>#{{ order.id }}</strong></td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ order.user.first_name }} {{ order.user.last_name }}</strong><br>
+                                            <small class="text-muted">{{ order.user.email }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ order.created_at.strftime('%d/%m/%Y') }}<br>
+                                        <small class="text-muted">{{ order.created_at.strftime('%H:%M') }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ order.items|length }} article(s)</span>
+                                    </td>
+                                    <td>
+                                        <strong>{{ "%.2f"|format(order.total_amount) }} €</strong>
+                                    </td>
+                                    <td>
+                                        <select class="form-select form-select-sm status-select" data-order-id="{{ order.id }}">
+                                            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>En attente</option>
+                                            <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmée</option>
+                                            <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Expédiée</option>
+                                            <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Livrée</option>
+                                            <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Annulée</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-outline-primary" title="Voir détails">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-info" onclick="printOrder({{ order.id }})" title="Imprimer">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" onclick="deleteOrder({{ order.id }})" title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            {% if orders.pages > 1 %}
+            <nav aria-label="Navigation des pages" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if orders.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_orders', page=orders.prev_num) }}">Précédent</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in orders.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != orders.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_orders', page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if orders.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_orders', page=orders.next_num) }}">Suivant</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                <h4>Aucune commande</h4>
+                <p class="text-muted">Aucune commande n'a été passée pour le moment</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Filtrage des commandes par statut
+document.addEventListener('DOMContentLoaded', function() {
+    const statusFilters = document.querySelectorAll('input[name="status-filter"]');
+    const orderRows = document.querySelectorAll('tbody tr[data-status]');
+    
+    statusFilters.forEach(filter => {
+        filter.addEventListener('change', function() {
+            const selectedStatus = this.id;
+            
+            orderRows.forEach(row => {
+                if (selectedStatus === 'all' || row.dataset.status === selectedStatus) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Mise à jour du statut des commandes
+    const statusSelects = document.querySelectorAll('.status-select');
+    statusSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            const orderId = this.dataset.orderId;
+            const newStatus = this.value;
+            
+            fetch(`/admin/orders/${orderId}/update_status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour l'attribut data-status de la ligne
+                    const row = this.closest('tr');
+                    row.dataset.status = newStatus;
+                    
+                    // Afficher un message de succès
+                    BijouxStore.showAlert('Statut de la commande mis à jour avec succès', 'success');
+                } else {
+                    BijouxStore.showAlert('Erreur lors de la mise à jour du statut', 'danger');
+                    // Remettre l'ancienne valeur
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                BijouxStore.showAlert('Erreur lors de la mise à jour du statut', 'danger');
+                location.reload();
+            });
+        });
+    });
+
+    // Gestion de la sélection multiple
+    window.toggleSelectAll = function() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.order-checkbox');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+
+        updateDeleteButton();
+    };
+
+    window.updateDeleteButton = function() {
+        const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+        const deleteBtn = document.getElementById('deleteSelectedBtn');
+
+        if (checkboxes.length > 0) {
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = `<i class="fas fa-trash"></i> Supprimer (${checkboxes.length})`;
+        } else {
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Supprimer sélectionnées';
+        }
+    };
+
+    // Suppression d'une commande individuelle
+    window.deleteOrder = function(orderId) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette commande ? Cette action est irréversible.')) {
+            fetch(`/admin/orders/${orderId}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    BijouxStore.showAlert(data.message || 'Commande supprimée avec succès', 'success');
+                    // Supprimer la ligne du tableau
+                    const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+                    if (row) {
+                        row.remove();
+                    }
+                    updateDeleteButton();
+                } else {
+                    BijouxStore.showAlert(data.error || 'Erreur lors de la suppression', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                BijouxStore.showAlert('Erreur lors de la suppression', 'danger');
+            });
+        }
+    };
+
+    // Suppression de plusieurs commandes
+    window.deleteSelectedOrders = function() {
+        const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+        const orderIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+        if (orderIds.length === 0) {
+            BijouxStore.showAlert('Aucune commande sélectionnée', 'warning');
+            return;
+        }
+
+        if (confirm(`Êtes-vous sûr de vouloir supprimer ${orderIds.length} commande(s) ? Cette action est irréversible.`)) {
+            fetch('/admin/orders/delete_multiple', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    order_ids: orderIds
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    BijouxStore.showAlert(data.message, 'success');
+                    // Supprimer les lignes du tableau
+                    orderIds.forEach(orderId => {
+                        const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+                        if (row) {
+                            row.remove();
+                        }
+                    });
+                    // Réinitialiser les sélections
+                    document.getElementById('selectAll').checked = false;
+                    updateDeleteButton();
+                } else {
+                    BijouxStore.showAlert(data.error || 'Erreur lors de la suppression', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                BijouxStore.showAlert('Erreur lors de la suppression', 'danger');
+            });
+        }
+    };
+
+    // Fonction d'export (placeholder)
+    window.exportOrders = function() {
+        BijouxStore.showAlert('Fonctionnalité d\'export en cours de développement', 'info');
+    };
+
+    // Fonction d'impression
+    window.printOrder = function(orderId) {
+        window.open(`/admin/orders/${orderId}/print`, '_blank');
+    };
+});
+
+function printOrder(orderId) {
+    window.open(`/admin/orders/${orderId}/print`, '_blank');
+}
+</script>
+{% endblock %}

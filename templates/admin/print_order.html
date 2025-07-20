@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande #{{ order.id }} - Bijoux Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { font-size: 12px; }
+            .container { max-width: 100% !important; }
+        }
+        
+        .invoice-header {
+            border-bottom: 3px solid #FFD700;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+        }
+        
+        .company-info {
+            text-align: right;
+        }
+        
+        .order-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .items-table th {
+            background-color: #FFD700;
+            color: #000;
+        }
+        
+        .total-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .signature-section {
+            margin-top: 50px;
+            border-top: 1px solid #ddd;
+            padding-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Bouton d'impression -->
+        <div class="no-print mb-3">
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="fas fa-print"></i> Imprimer
+            </button>
+            <button onclick="window.close()" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Fermer
+            </button>
+        </div>
+        
+        <!-- En-tête de la facture -->
+        <div class="invoice-header">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-gem text-warning"></i> Bijoux Store</h1>
+                    <p class="mb-1">123 Rue de la Paix</p>
+                    <p class="mb-1">75001 Paris, France</p>
+                    <p class="mb-1">Tél: +33 1 23 45 67 89</p>
+                    <p class="mb-0">Email: contact@bijoux-store.com</p>
+                </div>
+                <div class="col-md-6 company-info">
+                    <h2>COMMANDE</h2>
+                    <h3 class="text-primary">#{{ order.id }}</h3>
+                    <p class="mb-1"><strong>Date:</strong> {{ order.created_at.strftime('%d/%m/%Y à %H:%M') }}</p>
+                    <p class="mb-0"><strong>Statut:</strong> 
+                        <span class="badge bg-{% if order.status == 'pending' %}warning{% elif order.status == 'confirmed' %}info{% elif order.status == 'shipped' %}primary{% elif order.status == 'delivered' %}success{% else %}secondary{% endif %}">
+                            {% if order.status == 'pending' %}En attente
+                            {% elif order.status == 'confirmed' %}Confirmée
+                            {% elif order.status == 'shipped' %}Expédiée
+                            {% elif order.status == 'delivered' %}Livrée
+                            {% else %}{{ order.status }}
+                            {% endif %}
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Informations client -->
+        <div class="order-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-user"></i> Informations Client</h5>
+                    <p class="mb-1"><strong>Nom:</strong> {{ order.user.first_name }} {{ order.user.last_name }}</p>
+                    <p class="mb-1"><strong>Email:</strong> {{ order.user.email }}</p>
+                    <p class="mb-0"><strong>Téléphone:</strong> {{ order.user.phone or 'Non renseigné' }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="fas fa-truck"></i> Adresse de Livraison</h5>
+                    <p class="mb-1">{{ order.shipping_address or 'Adresse non renseignée' }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Articles commandés -->
+        <div class="mb-4">
+            <h5><i class="fas fa-shopping-bag"></i> Articles Commandés</h5>
+            <table class="table table-bordered items-table">
+                <thead>
+                    <tr>
+                        <th>Article</th>
+                        <th>Description</th>
+                        <th class="text-center">Quantité</th>
+                        <th class="text-end">Prix unitaire</th>
+                        <th class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td>
+                            <strong>{{ item.product.name }}</strong><br>
+                            <small class="text-muted">Réf: {{ item.product.id }}</small>
+                        </td>
+                        <td>
+                            <small>{{ item.product.description[:100] }}{% if item.product.description|length > 100 %}...{% endif %}</small>
+                        </td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="text-end">{{ "%.2f"|format(item.price) }} €</td>
+                        <td class="text-end"><strong>{{ "%.2f"|format(item.quantity * item.price) }} €</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Total -->
+        <div class="total-section">
+            <div class="row">
+                <div class="col-md-8"></div>
+                <div class="col-md-4">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Sous-total:</strong></td>
+                            <td class="text-end"><strong>{{ "%.2f"|format(order.total_amount) }} €</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Frais de port:</strong></td>
+                            <td class="text-end"><strong>Gratuit</strong></td>
+                        </tr>
+                        <tr class="table-warning">
+                            <td><strong>TOTAL:</strong></td>
+                            <td class="text-end"><h5><strong>{{ "%.2f"|format(order.total_amount) }} €</strong></h5></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Informations supplémentaires -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h6>Conditions de vente</h6>
+                <small class="text-muted">
+                    • Garantie 2 ans sur tous nos bijoux<br>
+                    • Retour possible sous 30 jours<br>
+                    • Livraison gratuite en France métropolitaine<br>
+                    • Paiement sécurisé
+                </small>
+            </div>
+            <div class="col-md-6">
+                <h6>Contact</h6>
+                <small class="text-muted">
+                    Pour toute question concernant votre commande:<br>
+                    Email: commandes@bijoux-store.com<br>
+                    Téléphone: +33 1 23 45 67 89<br>
+                    Du lundi au vendredi de 9h à 18h
+                </small>
+            </div>
+        </div>
+        
+        <!-- Section signature -->
+        <div class="signature-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Signature du client:</strong></p>
+                    <div style="height: 60px; border-bottom: 1px solid #ccc; margin-top: 20px;"></div>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Cachet et signature du livreur:</strong></p>
+                    <div style="height: 60px; border-bottom: 1px solid #ccc; margin-top: 20px;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pied de page -->
+        <div class="text-center mt-4 pt-3" style="border-top: 1px solid #ddd;">
+            <small class="text-muted">
+                Bijoux Store - SIRET: 123 456 789 00012 - TVA: FR12345678901<br>
+                Merci de votre confiance !
+            </small>
+        </div>
+    </div>
+    
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+    <script>
+        // Auto-impression si demandée
+        if (window.location.search.includes('auto_print=1')) {
+            window.onload = function() {
+                setTimeout(function() {
+                    window.print();
+                }, 500);
+            };
+        }
+    </script>
+</body>
+</html>

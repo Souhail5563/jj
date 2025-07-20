@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion du Stock - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tachometer-alt"></i> Administration</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_products') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-gem"></i> Produits
+                    </a>
+                    <a href="{{ url_for('admin_orders') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-bag"></i> Commandes
+                    </a>
+                    <a href="{{ url_for('admin_stock') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-boxes"></i> Stock
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Gestion du Stock</h2>
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="stock-filter" id="all-stock" autocomplete="off" checked>
+                    <label class="btn btn-outline-primary" for="all-stock">Tous</label>
+                    
+                    <input type="radio" class="btn-check" name="stock-filter" id="low-stock" autocomplete="off">
+                    <label class="btn btn-outline-warning" for="low-stock">Stock bas</label>
+                    
+                    <input type="radio" class="btn-check" name="stock-filter" id="out-of-stock" autocomplete="off">
+                    <label class="btn btn-outline-danger" for="out-of-stock">Rupture</label>
+                </div>
+            </div>
+            
+            <!-- Alertes de stock -->
+            {% if products %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <strong>{{ products|length }} produit(s)</strong> nécessitent votre attention (stock bas ou rupture).
+            </div>
+            {% endif %}
+            
+            <!-- Tableau des produits -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="stock-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Produit</th>
+                                    <th>Catégorie</th>
+                                    <th>Stock actuel</th>
+                                    <th>Seuil d'alerte</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products %}
+                                <tr data-stock-status="{% if product.stock_quantity == 0 %}out-of-stock{% elif product.is_low_stock %}low-stock{% else %}ok{% endif %}">
+                                    <td>
+                                        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover;" class="rounded">
+                                    </td>
+                                    <td>
+                                        <strong>{{ product.name }}</strong><br>
+                                        <small class="text-muted">{{ product.material }}</small>
+                                    </td>
+                                    <td>{{ product.category }}</td>
+                                    <td>
+                                        <span class="stock-quantity {% if product.stock_quantity == 0 %}text-danger{% elif product.is_low_stock %}text-warning{% else %}text-success{% endif %}">
+                                            {{ product.stock_quantity }}
+                                        </span>
+                                    </td>
+                                    <td>{{ product.min_stock_alert }}</td>
+                                    <td>
+                                        {% if product.stock_quantity == 0 %}
+                                        <span class="badge bg-danger">Rupture</span>
+                                        {% elif product.is_low_stock %}
+                                        <span class="badge bg-warning">Stock bas</span>
+                                        {% else %}
+                                        <span class="badge bg-success">OK</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" onclick="updateStock({{ product.id }}, '{{ product.name }}')" title="Mettre à jour le stock">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <a href="{{ url_for('admin_edit_product', id=product.id) }}" class="btn btn-outline-secondary" title="Modifier le produit">
+                                                <i class="fas fa-cog"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            {% if not products %}
+            <div class="text-center py-5">
+                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                <h4>Tous les stocks sont OK</h4>
+                <p class="text-muted">Aucun produit ne nécessite d'attention particulière</p>
+                <a href="{{ url_for('admin_products') }}" class="btn btn-primary">Voir tous les produits</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de mise à jour du stock -->
+<div class="modal fade" id="updateStockModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Mettre à jour le stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="updateStockForm">
+                <div class="modal-body">
+                    <input type="hidden" id="productId" name="product_id">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Produit</label>
+                        <input type="text" class="form-control" id="productName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="currentStock" class="form-label">Stock actuel</label>
+                        <input type="number" class="form-control" id="currentStock" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newStock" class="form-label">Nouveau stock</label>
+                        <input type="number" class="form-control" id="newStock" name="new_stock" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Raison (optionnel)</label>
+                        <select class="form-select" id="reason" name="reason">
+                            <option value="">Sélectionner une raison</option>
+                            <option value="restock">Réapprovisionnement</option>
+                            <option value="correction">Correction d'inventaire</option>
+                            <option value="damage">Produit endommagé</option>
+                            <option value="return">Retour client</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Filtrage des produits par statut de stock
+document.addEventListener('DOMContentLoaded', function() {
+    const stockFilters = document.querySelectorAll('input[name="stock-filter"]');
+    const productRows = document.querySelectorAll('#stock-table tbody tr[data-stock-status]');
+    
+    stockFilters.forEach(filter => {
+        filter.addEventListener('change', function() {
+            const selectedFilter = this.id;
+            
+            productRows.forEach(row => {
+                const stockStatus = row.dataset.stockStatus;
+                
+                if (selectedFilter === 'all-stock' || 
+                    (selectedFilter === 'low-stock' && stockStatus === 'low-stock') ||
+                    (selectedFilter === 'out-of-stock' && stockStatus === 'out-of-stock')) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+
+function updateStock(productId, productName) {
+    // Récupérer les informations actuelles du produit
+    const row = document.querySelector(`tr[data-stock-status] td:first-child img[alt="${productName}"]`).closest('tr');
+    const currentStock = row.querySelector('.stock-quantity').textContent.trim();
+    
+    // Remplir le modal
+    document.getElementById('productId').value = productId;
+    document.getElementById('productName').value = productName;
+    document.getElementById('currentStock').value = currentStock;
+    document.getElementById('newStock').value = currentStock;
+    
+    // Afficher le modal
+    const modal = new bootstrap.Modal(document.getElementById('updateStockModal'));
+    modal.show();
+}
+
+// Gestion de la soumission du formulaire de mise à jour du stock
+document.getElementById('updateStockForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const productId = formData.get('product_id');
+    
+    fetch(`/admin/products/${productId}/update_stock`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            BijouxStore.showAlert('Stock mis à jour avec succès', 'success');
+            location.reload();
+        } else {
+            BijouxStore.showAlert('Erreur lors de la mise à jour du stock', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        BijouxStore.showAlert('Erreur lors de la mise à jour du stock', 'danger');
+    });
+    
+    // Fermer le modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('updateStockModal'));
+    modal.hide();
+});
+</script>
+{% endblock %}
