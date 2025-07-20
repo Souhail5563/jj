@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Parfum Store{% endblock %}
+
+{% block content %}
+<!-- Slider Section -->
+{% if sliders %}
+<section class="slider-section">
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+        <div class="carousel-indicators">
+            {% for slider in sliders %}
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></button>
+            {% endfor %}
+        </div>
+
+        <div class="carousel-inner">
+            {% for slider in sliders %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="slider-bg" style="background-image: url('{{ slider.image_url }}');">
+                    <div class="slider-overlay">
+                        <div class="container h-100">
+                            <div class="row h-100 align-items-center">
+                                <div class="col-lg-8 col-xl-6">
+                                    <div class="slider-content text-white">
+                                        <h1 class="display-3 fw-bold mb-3 text-3d">{{ slider.title }}</h1>
+                                        {% if slider.subtitle %}
+                                        <h3 class="mb-4">{{ slider.subtitle }}</h3>
+                                        {% endif %}
+                                        {% if slider.description %}
+                                        <p class="lead mb-4">{{ slider.description }}</p>
+                                        {% endif %}
+                                        {% if slider.button_text and slider.button_link %}
+                                        <a href="{{ slider.button_link }}" class="btn btn-primary btn-lg shadow-3d">
+                                            <i class="fas fa-spray-can me-2"></i>{{ slider.button_text }}
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+            <span class="visually-hidden">Précédent</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+            <span class="visually-hidden">Suivant</span>
+        </button>
+    </div>
+</section>
+{% else %}
+<!-- Hero Section Parfums par défaut si pas de sliders -->
+<section class="hero-section perfume-hero bg-gradient text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold">
+                    <i class="fas fa-spray-can me-3"></i>Parfum Store
+                </h1>
+                <p class="lead">Découvrez notre collection exclusive de parfums de luxe. Des fragrances authentiques des plus grandes maisons pour révéler votre personnalité.</p>
+                <div class="perfume-highlights mb-4">
+                    <div class="highlight-item">
+                        <i class="fas fa-certificate text-warning me-2"></i>
+                        <span>Parfums Authentiques</span>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fas fa-shipping-fast text-success me-2"></i>
+                        <span>Livraison Gratuite</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('catalog') }}" class="btn btn-light btn-lg perfume-btn">
+                    <i class="fas fa-search me-2"></i> Découvrir les Parfums
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <div class="perfume-bottles-display">
+                    <div class="bottle-icon">
+                        <i class="fas fa-spray-can fa-5x text-light opacity-75"></i>
+                    </div>
+                    <div class="perfume-brands-showcase">
+                        <span class="brand-tag">Chanel</span>
+                        <span class="brand-tag">Dior</span>
+                        <span class="brand-tag">Tom Ford</span>
+                        <span class="brand-tag">Hermès</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Categories Parfums Section -->
+<section class="py-5 perfume-categories">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-spray-can me-3"></i>Nos Collections de Parfums
+        </h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card category-card perfume-category h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-crown fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Eau de Parfum</h5>
+                        <p class="card-text">Concentration intense et longue tenue. Les fragrances les plus prestigieuses pour une élégance raffinée.</p>
+                        <div class="perfume-info mb-3">
+                            <span class="badge bg-primary">15-20% concentration</span>
+                            <span class="badge bg-success">6-8h tenue</span>
+                        </div>
+                        <a href="{{ url_for('catalog', category='Eau de Parfum') }}" class="btn btn-outline-primary perfume-btn-outline">
+                            <i class="fas fa-search me-2"></i>Découvrir
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card category-card perfume-category h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Eau de Toilette</h5>
+                        <p class="card-text">Fraîcheur et légèreté pour un usage quotidien. Parfait pour découvrir de nouvelles fragrances.</p>
+                        <div class="perfume-info mb-3">
+                            <span class="badge bg-success">5-15% concentration</span>
+                            <span class="badge bg-info">3-5h tenue</span>
+                        </div>
+                        <a href="{{ url_for('catalog', category='Eau de Toilette') }}" class="btn btn-outline-success perfume-btn-outline">
+                            <i class="fas fa-search me-2"></i>Découvrir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marques Prestigieuses -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="text-center mb-4">Marques Prestigieuses</h3>
+                <div class="brands-showcase">
+                    <div class="brand-item">
+                        <i class="fas fa-gem text-warning"></i>
+                        <span>Chanel</span>
+                    </div>
+                    <div class="brand-item">
+                        <i class="fas fa-star text-primary"></i>
+                        <span>Dior</span>
+                    </div>
+                    <div class="brand-item">
+                        <i class="fas fa-crown text-dark"></i>
+                        <span>Tom Ford</span>
+                    </div>
+                    <div class="brand-item">
+                        <i class="fas fa-horse text-warning"></i>
+                        <span>Hermès</span>
+                    </div>
+                    <div class="brand-item">
+                        <i class="fas fa-heart text-danger"></i>
+                        <span>YSL</span>
+                    </div>
+                    <div class="brand-item">
+                        <i class="fas fa-shield-alt text-info"></i>
+                        <span>Creed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Perfumes -->
+{% if products %}
+<section class="py-5 bg-light perfume-featured">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-star me-3"></i>Parfums Vedettes
+        </h2>
+        <div class="row">
+            {% for product in products %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card product-card perfume-card h-100">
+                    <div class="perfume-image-container">
+                        {% if product.get_primary_image() %}
+                            <img src="{{ product.get_primary_image().image_url }}"
+                                 alt="{{ product.get_primary_image().alt_text }}"
+                                 class="perfume-product-image">
+                            {% if product.has_multiple_images %}
+                                <div class="image-count-badge">
+                                    <i class="fas fa-images"></i> {{ product.get_all_images()|length }}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <i class="fas fa-spray-can fa-4x text-primary perfume-icon"></i>
+                        {% endif %}
+                        <div class="perfume-overlay">
+                            <span class="perfume-category">{{ product.category }}</span>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title perfume-title">{{ product.name }}</h5>
+                        <div class="perfume-brand-info mb-2">
+                            <span class="badge bg-primary">{{ product.material.split(' - ')[0] if product.material else 'Parfum' }}</span>
+                            <span class="badge bg-secondary">{{ product.material.split(' - ')[1] if product.material and ' - ' in product.material else 'Mixte' }}</span>
+                            <span class="badge bg-info">{{ product.material.split(' - ')[2] if product.material and product.material.count(' - ') >= 2 else '50ml' }}</span>
+                        </div>
+                        <p class="card-text perfume-description flex-grow-1">{{ product.description[:120] }}...</p>
+                        <div class="perfume-notes mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-leaf me-1"></i>Notes olfactives incluses
+                            </small>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-primary mb-0 perfume-price">{{ "%.2f"|format(product.price) }} €</span>
+                                <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-primary perfume-btn">
+                                    <i class="fas fa-eye me-1"></i>Découvrir
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('catalog') }}" class="btn btn-primary btn-lg perfume-btn">
+                <i class="fas fa-spray-can me-2"></i>Voir tous les parfums
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

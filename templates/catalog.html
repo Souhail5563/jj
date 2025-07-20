@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Catalogue - Parfum Store{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Filtres Parfums -->
+        <div class="col-md-3">
+            <div class="card perfume-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-spray-can me-2"></i>Filtres Parfums</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET">
+                        <!-- Filtre par Type -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">
+                                <i class="fas fa-tags me-1"></i>Type de Parfum
+                            </label>
+                            <select class="form-select" id="category" name="category" onchange="this.form.submit()">
+                                <option value="">Tous les types</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat }}" {% if cat == current_category %}selected{% endif %}>{{ cat }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Filtre par Prix -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-euro-sign me-1"></i>Gamme de Prix
+                            </label>
+                            <div class="price-ranges">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="price_range" value="" id="price_all" {% if not request.args.get('price_range') %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label" for="price_all">Tous les prix</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="price_range" value="0-75" id="price_1" {% if request.args.get('price_range') == '0-75' %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label" for="price_1">Moins de 75€</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="price_range" value="75-150" id="price_2" {% if request.args.get('price_range') == '75-150' %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label" for="price_2">75€ - 150€</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="price_range" value="150-999" id="price_3" {% if request.args.get('price_range') == '150-999' %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label" for="price_3">Plus de 150€</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filtre par Marque -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-crown me-1"></i>Marques
+                            </label>
+                            <div class="brand-filters">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="brand" value="Chanel" id="brand_chanel" {% if 'Chanel' in request.args.getlist('brand') %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label" for="brand_chanel">Chanel</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="brand" value="Dior" id="brand_dior" {% if 'Dior' in request.args.getlist('brand') %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label" for="brand_dior">Dior</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="brand" value="Tom Ford" id="brand_tf" {% if 'Tom Ford' in request.args.getlist('brand') %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label" for="brand_tf">Tom Ford</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="brand" value="Hermès" id="brand_hermes" {% if 'Hermès' in request.args.getlist('brand') %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label" for="brand_hermes">Hermès</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bouton Reset -->
+                        <div class="d-grid">
+                            <a href="{{ url_for('catalog') }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-undo me-1"></i>Réinitialiser
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parfums -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="perfume-title">
+                    <i class="fas fa-spray-can me-2"></i>
+                    {% if current_category %}
+                        {{ current_category }}
+                    {% else %}
+                        Tous nos Parfums
+                    {% endif %}
+                </h2>
+                <div class="catalog-info">
+                    <span class="badge bg-primary">{{ products.total }} parfum(s)</span>
+                </div>
+            </div>
+
+            {% if products.items %}
+            <div class="row">
+                {% for product in products.items %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card product-card perfume-card h-100">
+                        <div class="perfume-image-container">
+                            {% if product.get_primary_image() %}
+                                <img src="{{ product.get_primary_image().image_url }}"
+                                     alt="{{ product.get_primary_image().alt_text }}"
+                                     class="perfume-product-image">
+                                {% if product.has_multiple_images %}
+                                    <div class="image-count-badge">
+                                        <i class="fas fa-images"></i> {{ product.get_all_images()|length }}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <i class="fas fa-spray-can fa-4x text-primary perfume-icon"></i>
+                            {% endif %}
+                            <div class="perfume-overlay">
+                                <span class="perfume-category">{{ product.category }}</span>
+                            </div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title perfume-title">{{ product.name }}</h5>
+                            <div class="perfume-brand-info mb-2">
+                                <span class="badge bg-primary">{{ product.material.split(' - ')[0] if product.material else 'Parfum' }}</span>
+                                <span class="badge bg-secondary">{{ product.material.split(' - ')[1] if product.material and ' - ' in product.material else 'Mixte' }}</span>
+                                <span class="badge bg-info">{{ product.material.split(' - ')[2] if product.material and product.material.count(' - ') >= 2 else '50ml' }}</span>
+                            </div>
+                            <p class="card-text perfume-description flex-grow-1">{{ product.description[:120] }}{% if product.description|length > 120 %}...{% endif %}</p>
+                            <div class="perfume-notes mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-leaf me-1"></i>Notes olfactives détaillées
+                                </small>
+                            </div>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="h5 perfume-price mb-0">{{ "%.2f"|format(product.price) }} €</span>
+                                    {% if product.stock_quantity > 0 %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>En stock
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times me-1"></i>Rupture
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-primary perfume-btn">
+                                        <i class="fas fa-eye me-1"></i>Découvrir ce parfum
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if products.pages > 1 %}
+            <nav aria-label="Navigation des pages">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('catalog', page=products.prev_num, category=current_category) }}">Précédent</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in products.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != products.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('catalog', page=page_num, category=current_category) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('catalog', page=products.next_num, category=current_category) }}">Suivant</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-spray-can fa-3x text-muted mb-3"></i>
+                <h4>Aucun parfum trouvé</h4>
+                <p class="text-muted">Essayez de modifier vos filtres ou explorez d'autres catégories</p>
+                <a href="{{ url_for('catalog') }}" class="btn btn-primary perfume-btn mt-3">
+                    <i class="fas fa-undo me-1"></i>Voir tous les parfums
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

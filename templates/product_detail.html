@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Parfum Store{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">
+                <i class="fas fa-home me-1"></i>Accueil
+            </a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('catalog') }}">
+                <i class="fas fa-spray-can me-1"></i>Parfums
+            </a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('catalog', category=product.category) }}">{{ product.category }}</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Galerie d'images parfum -->
+            <div class="perfume-gallery">
+                {% if product.get_all_images() %}
+                    <!-- Image principale -->
+                    <div class="main-image-container">
+                        {% set primary_image = product.get_primary_image() or product.get_all_images()[0] %}
+                        <img src="{{ primary_image.image_url }}"
+                             alt="{{ primary_image.alt_text }}"
+                             class="main-perfume-image"
+                             id="mainImage">
+                        <div class="perfume-category-badge">
+                            <span class="badge bg-primary">{{ product.category }}</span>
+                        </div>
+                        <div class="image-zoom-overlay">
+                            <i class="fas fa-search-plus"></i>
+                        </div>
+                    </div>
+
+                    <!-- Miniatures -->
+                    {% if product.has_multiple_images %}
+                    <div class="image-thumbnails">
+                        {% for image in product.get_all_images() %}
+                        <div class="thumbnail-item {% if image.is_primary %}active{% endif %}"
+                             onclick="changeMainImage('{{ image.image_url }}', '{{ image.alt_text }}', this)">
+                            <img src="{{ image.image_url }}" alt="{{ image.alt_text }}">
+                            <div class="thumbnail-overlay">
+                                {% if image.is_primary %}
+                                    <i class="fas fa-star"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <!-- Fallback si pas d'images -->
+                    <div class="perfume-image-showcase">
+                        <div class="perfume-bottle-display">
+                            <i class="fas fa-spray-can fa-8x text-primary perfume-main-icon"></i>
+                            <div class="perfume-aura"></div>
+                        </div>
+                        <div class="perfume-category-badge">
+                            <span class="badge bg-primary">{{ product.category }}</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="perfume-details">
+                <h1 class="perfume-title">{{ product.name }}</h1>
+                <div class="perfume-brand-info mb-3">
+                    <span class="badge bg-primary me-1">{{ product.material.split(' - ')[0] if product.material else 'Parfum' }}</span>
+                    <span class="badge bg-secondary me-1">{{ product.material.split(' - ')[1] if product.material and ' - ' in product.material else 'Mixte' }}</span>
+                    <span class="badge bg-info">{{ product.material.split(' - ')[2] if product.material and product.material.count(' - ') >= 2 else '50ml' }}</span>
+                </div>
+
+                <div class="perfume-price-section mb-4">
+                    <div class="price-display">
+                        <span class="h2 perfume-price">{{ "%.2f"|format(product.price) }} €</span>
+                        <small class="text-muted d-block">Prix TTC, livraison gratuite dès 75€</small>
+                    </div>
+                </div>
+
+                <div class="perfume-availability mb-4">
+                    {% if product.stock_quantity > 0 %}
+                        <div class="availability-badge bg-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span>En stock</span>
+                            <small class="d-block">{{ product.stock_quantity }} flacon(s) disponible(s)</small>
+                        </div>
+                    {% else %}
+                        <div class="availability-badge bg-danger">
+                            <i class="fas fa-times-circle me-2"></i>
+                            <span>Rupture de stock</span>
+                            <small class="d-block">Réapprovisionnement en cours</small>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="perfume-description mb-4">
+                    <h5><i class="fas fa-info-circle me-2"></i>Description</h5>
+                    <p class="perfume-description-text">{{ product.description }}</p>
+                </div>
+
+                <!-- Notes Olfactives Simulées -->
+                <div class="perfume-notes mb-4">
+                    <h5><i class="fas fa-leaf me-2"></i>Pyramide Olfactive</h5>
+                    <div class="notes-pyramid">
+                        <div class="note-level">
+                            <div class="note-label">Notes de Tête</div>
+                            <div class="note-content">Bergamote, Citron, Poivre rose</div>
+                        </div>
+                        <div class="note-level">
+                            <div class="note-label">Notes de Cœur</div>
+                            <div class="note-content">Jasmin, Rose, Géranium</div>
+                        </div>
+                        <div class="note-level">
+                            <div class="note-label">Notes de Fond</div>
+                            <div class="note-content">Santal, Vanille, Musc</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations Parfum -->
+                <div class="perfume-info mb-4">
+                    <h5><i class="fas fa-flask me-2"></i>Informations</h5>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Concentration:</strong>
+                            <span>{{ 'Eau de Parfum (15-20%)' if product.category == 'Eau de Parfum' else 'Eau de Toilette (5-15%)' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Tenue:</strong>
+                            <span>{{ '6-8 heures' if product.category == 'Eau de Parfum' else '3-5 heures' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Sillage:</strong>
+                            <span>{{ 'Intense' if product.category == 'Eau de Parfum' else 'Modéré' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Saison:</strong>
+                            <span>Toute saison</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions d'achat -->
+                {% if current_user.is_authenticated and product.stock_quantity > 0 %}
+                <div class="perfume-purchase-section">
+                    <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                        <div class="quantity-selector mb-3">
+                            <label for="quantity" class="form-label">
+                                <i class="fas fa-shopping-bag me-1"></i>Quantité
+                            </label>
+                            <div class="input-group" style="max-width: 150px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                                <input type="number" class="form-control text-center" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}">
+                                <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity({{ product.stock_quantity }})">+</button>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg perfume-btn">
+                                <i class="fas fa-shopping-cart me-2"></i>Ajouter au panier
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Avantages -->
+                    <div class="perfume-benefits mt-4">
+                        <div class="benefit-item">
+                            <i class="fas fa-shield-alt text-success me-2"></i>
+                            <span>Parfum authentique garanti</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-truck text-info me-2"></i>
+                            <span>Livraison gratuite dès 75€</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-undo text-warning me-2"></i>
+                            <span>Retour sous 30 jours</span>
+                        </div>
+                    </div>
+                </div>
+                {% elif not current_user.is_authenticated %}
+                <div class="alert alert-info perfume-alert">
+                    <i class="fas fa-user-circle me-2"></i>
+                    <strong>Connexion requise</strong><br>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm mt-2">
+                        Se connecter
+                    </a> pour ajouter ce parfum à votre panier.
+                </div>
+                {% endif %}
+
+                <!-- Informations techniques -->
+                <div class="perfume-technical-info mt-4">
+                    <h6><i class="fas fa-cog me-2"></i>Informations Techniques</h6>
+                    <div class="technical-grid">
+                        <div class="tech-item">
+                            <strong>Référence:</strong>
+                            <span class="text-muted">#PF{{ "%04d"|format(product.id) }}</span>
+                        </div>
+                        <div class="tech-item">
+                            <strong>Code-barres:</strong>
+                            <span class="text-muted">3{{ product.id }}123456789</span>
+                        </div>
+                        <div class="tech-item">
+                            <strong>Origine:</strong>
+                            <span class="text-muted">France</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

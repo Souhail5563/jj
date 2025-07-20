@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Mon Panier - Bijoux Store{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-shopping-cart"></i> Mon Panier</h2>
+    
+    {% if cart_items %}
+    <div class="row">
+        <div class="col-md-8">
+            {% for item in cart_items %}
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-3">
+                        <img src="{{ item.product.image_url }}" class="img-fluid rounded-start h-100" alt="{{ item.product.name }}" style="object-fit: cover;">
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="card-title">{{ item.product.name }}</h5>
+                                    <p class="card-text text-muted">{{ item.product.category }} - {{ item.product.material }}</p>
+                                    <p class="card-text">
+                                        <strong>Prix unitaire:</strong> {{ "%.2f"|format(item.product.price) }} €<br>
+                                        <strong>Quantité:</strong> {{ item.quantity }}<br>
+                                        <strong>Sous-total:</strong> {{ "%.2f"|format(item.product.price * item.quantity) }} €
+                                    </p>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('remove_from_cart', item_id=item.id) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir retirer ce produit ?')">
+                                        <i class="fas fa-trash"></i> Retirer
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Récapitulatif</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Sous-total:</span>
+                        <span>{{ "%.2f"|format(total) }} €</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Livraison:</span>
+                        <span>Gratuite</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong>{{ "%.2f"|format(total) }} €</strong>
+                    </div>
+                    <a href="{{ url_for('checkout') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-credit-card"></i> Passer commande
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+        <h4>Votre panier est vide</h4>
+        <p class="text-muted">Découvrez nos magnifiques bijoux</p>
+        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Voir le catalogue</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

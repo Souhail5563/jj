@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Mes Commandes - Bijoux Store{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-shopping-bag"></i> Mes Commandes</h2>
+    
+    {% if orders %}
+    <div class="row">
+        {% for order in orders %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h6>Commande #{{ order.id }}</h6>
+                    <small class="text-muted">{{ order.created_at.strftime('%d/%m/%Y') }}</small>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Total:</strong> {{ "%.2f"|format(order.total_amount) }} €</p>
+                            <p><strong>Statut:</strong> 
+                                <span class="badge bg-{% if order.status == 'pending' %}warning{% elif order.status == 'confirmed' %}info{% elif order.status == 'shipped' %}primary{% elif order.status == 'delivered' %}success{% else %}danger{% endif %}">
+                                    {{ order.status|title }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Articles:</strong> {{ order.items|length }}</p>
+                            <a href="{{ url_for('order_confirmation', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">Voir détails</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+        <h4>Aucune commande</h4>
+        <p class="text-muted">Vous n'avez pas encore passé de commande</p>
+        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Découvrir nos bijoux</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

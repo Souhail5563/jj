@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Démonstration 3D - Bijoux Store{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-gold">Effets 3D Premium</h1>
+        <p class="lead">Découvrez les effets 3D modernes de notre boutique de bijoux</p>
+    </div>
+    
+    <!-- Section Cards 3D -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Cartes avec Effets 3D</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-3d hover-lift">
+                    <div class="card-body text-center">
+                        <i class="fas fa-gem fa-3x text-gold mb-3"></i>
+                        <h5 class="card-title">Effet Lift</h5>
+                        <p class="card-text">Survolez pour voir l'effet de levée 3D</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-3d hover-rotate">
+                    <div class="card-body text-center">
+                        <i class="fas fa-ring fa-3x text-gold mb-3"></i>
+                        <h5 class="card-title">Effet Rotation</h5>
+                        <p class="card-text">Survolez pour voir la rotation 3D</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card glass-effect">
+                    <div class="card-body text-center">
+                        <i class="fas fa-crown fa-3x text-gold mb-3"></i>
+                        <h5 class="card-title">Effet Verre</h5>
+                        <p class="card-text">Effet de verre avec flou d'arrière-plan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section Boutons 3D -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Boutons avec Effets 3D</h2>
+        <div class="text-center">
+            <button class="btn btn-primary me-3 mb-3">Bouton Principal 3D</button>
+            <button class="btn btn-outline-primary me-3 mb-3">Bouton Outline 3D</button>
+            <button class="btn btn-success me-3 mb-3">Bouton Succès 3D</button>
+            <button class="btn btn-warning me-3 mb-3">Bouton Attention 3D</button>
+        </div>
+    </section>
+    
+    <!-- Section Badges 3D -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Badges avec Effets 3D</h2>
+        <div class="text-center">
+            <span class="badge bg-primary me-2 mb-2">Badge Principal</span>
+            <span class="badge bg-success me-2 mb-2">Badge Succès</span>
+            <span class="badge bg-warning me-2 mb-2">Badge Attention</span>
+            <span class="badge bg-danger me-2 mb-2">Badge Danger</span>
+            <span class="badge bg-info me-2 mb-2">Badge Info</span>
+            <span class="badge bg-secondary me-2 mb-2">Badge Secondaire</span>
+        </div>
+    </section>
+    
+    <!-- Section Alertes 3D -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Alertes avec Effets 3D</h2>
+        <div class="alert alert-success" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Succès!</strong> Ceci est une alerte de succès avec effet 3D.
+        </div>
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Information!</strong> Ceci est une alerte d'information avec effet 3D.
+        </div>
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Attention!</strong> Ceci est une alerte d'attention avec effet 3D.
+        </div>
+        <div class="alert alert-danger" role="alert">
+            <i class="fas fa-times-circle me-2"></i>
+            <strong>Erreur!</strong> Ceci est une alerte d'erreur avec effet 3D.
+        </div>
+    </section>
+    
+    <!-- Section Formulaires 3D -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Formulaires avec Effets 3D</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-3d">
+                    <div class="card-header">
+                        <h5 class="mb-0">Formulaire de Démonstration</h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="demo-name" class="form-label">Nom</label>
+                                <input type="text" class="form-control" id="demo-name" placeholder="Votre nom">
+                            </div>
+                            <div class="mb-3">
+                                <label for="demo-email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="demo-email" placeholder="votre@email.com">
+                            </div>
+                            <div class="mb-3">
+                                <label for="demo-select" class="form-label">Catégorie</label>
+                                <select class="form-select" id="demo-select">
+                                    <option selected>Choisir une catégorie</option>
+                                    <option value="1">Bagues</option>
+                                    <option value="2">Colliers</option>
+                                    <option value="3">Bracelets</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="demo-message" class="form-label">Message</label>
+                                <textarea class="form-control" id="demo-message" rows="3" placeholder="Votre message"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Envoyer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section Tableau 3D -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Tableau avec Effets 3D</h2>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Prix</th>
+                        <th>Stock</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bague Diamant</td>
+                        <td class="price">2500.00 €</td>
+                        <td>5</td>
+                        <td><span class="badge bg-success">En stock</span></td>
+                    </tr>
+                    <tr>
+                        <td>Collier Perles</td>
+                        <td class="price">850.00 €</td>
+                        <td>2</td>
+                        <td><span class="badge bg-warning">Stock bas</span></td>
+                    </tr>
+                    <tr>
+                        <td>Bracelet Or</td>
+                        <td class="price">1200.00 €</td>
+                        <td>0</td>
+                        <td><span class="badge bg-danger">Rupture</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    
+    <!-- Section Texte 3D -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Effets de Texte 3D</h2>
+        <div class="text-center">
+            <h1 class="text-3d mb-3">Texte avec Ombre 3D</h1>
+            <h2 class="text-gold mb-3">Texte avec Gradient Or</h2>
+            <p class="lead">Texte normal avec typographie améliorée</p>
+        </div>
+    </section>
+    
+    <!-- Section Animation -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Animations 3D</h2>
+        <div class="text-center">
+            <div class="d-inline-block me-4 mb-3">
+                <div class="loading"></div>
+                <p class="mt-2">Chargement 3D</p>
+            </div>
+            <div class="d-inline-block me-4 mb-3">
+                <i class="fas fa-gem fa-3x float-element text-gold"></i>
+                <p class="mt-2">Icône Flottante</p>
+            </div>
+        </div>
+    </section>
+    
+    <div class="text-center mb-5">
+        <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-arrow-left me-2"></i>Retour à l'Accueil
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Démonstration des effets de parallaxe
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const parallaxElements = document.querySelectorAll('.float-element');
+        
+        parallaxElements.forEach(function(element, index) {
+            const speed = 0.5 + (index * 0.1);
+            const yPos = -(scrolled * speed);
+            element.style.transform = `translateY(${yPos}px) rotateZ(${scrolled * 0.01}deg)`;
+        });
+    });
+    
+    // Effet de particules sur clic
+    document.addEventListener('click', function(e) {
+        createParticles(e.clientX, e.clientY);
+    });
+    
+    function createParticles(x, y) {
+        for (let i = 0; i < 5; i++) {
+            const particle = document.createElement('div');
+            particle.style.position = 'fixed';
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            particle.style.width = '4px';
+            particle.style.height = '4px';
+            particle.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
+            particle.style.borderRadius = '50%';
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '9999';
+            particle.style.animation = `particleFloat 1s ease-out forwards`;
+            
+            const angle = (Math.PI * 2 * i) / 5;
+            const velocity = 50;
+            const vx = Math.cos(angle) * velocity;
+            const vy = Math.sin(angle) * velocity;
+            
+            particle.style.setProperty('--vx', vx + 'px');
+            particle.style.setProperty('--vy', vy + 'px');
+            
+            document.body.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 1000);
+        }
+    }
+    
+    // Ajouter l'animation CSS pour les particules
+    const particleCSS = `
+        @keyframes particleFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--vx), var(--vy)) scale(0);
+                opacity: 0;
+            }
+        }
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = particleCSS;
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}
